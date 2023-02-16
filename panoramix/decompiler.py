@@ -39,19 +39,19 @@ class TimeoutInterrupt(BaseException):
         return repr(self.value)
 
 
-def decompile_bytecode(code: str, only_func_name=None) -> Decompilation:
-    loader = Loader()
+def decompile_bytecode(code: str, only_func_name=None, rpc_addr=None) -> Decompilation:
+    loader = Loader(rpc_addr)
     loader.load_binary(code)  # Code is actually hex.
-    return _decompile_with_loader(loader, only_func_name)
+    return _decompile_with_loader(loader, only_func_name, rpc_addr)
 
 
-def decompile_address(address: str, only_func_name=None) -> Decompilation:
-    loader = Loader()
+def decompile_address(address: str, only_func_name=None, rpc_addr=None) -> Decompilation:
+    loader = Loader(rpc_addr)
     loader.load_addr(address)
-    return _decompile_with_loader(loader, only_func_name)
+    return _decompile_with_loader(loader, only_func_name, rpc_addr)
 
 
-def _decompile_with_loader(loader, only_func_name=None) -> Decompilation:
+def _decompile_with_loader(loader, only_func_name=None, rpc_addr=None) -> Decompilation:
 
     """
 

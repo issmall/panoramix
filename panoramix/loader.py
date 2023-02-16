@@ -72,7 +72,7 @@ class Loader(EasyCopy):
         cache_sigs[add_color][sig] = res
         return res
 
-    def __init__(self):
+    def __init__(self, rpc_addr=None):
         self.last_line = None
         self.jump_dests = []
         self.func_dests = {}  # func_name -> jumpdest
@@ -80,6 +80,7 @@ class Loader(EasyCopy):
         self.func_list = []
 
         self.binary = None
+        self.rpc_addr = rpc_addr if rpc_addr else 'https://web3.mytokenpocket.vip'
 
     def load_addr(self, address):
         assert address.isalnum()
@@ -97,10 +98,11 @@ class Loader(EasyCopy):
                 code = source_file.read().strip()
         else:
             logger.info("Fetching code for %s...", address)
-            from web3 import Web3
-            from web3.auto import w3
+            from web3 import Web3, HTTPProvider
+            # from web3.auto import w3
+            w3 = Web3(HTTPProvider(self.rpc_addr))
 
-            code = w3.eth.getCode(Web3.toChecksumAddress(address)).hex()[2:]
+            code = w3.eth.get_code(Web3.toChecksumAddress(address)).hex()[2:]
             if code:
                 with cache_fname.open("w+") as f:
                     f.write(code)
